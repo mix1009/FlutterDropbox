@@ -91,7 +91,7 @@ Future testLogin() async {
 }
 
 Future getAccessToken() async {
-  accessToken = Dropbox.getAccessToken();
+  accessToken = await Dropbox.getAccessToken();
 }
 
 Future loginWithAccessToken() async {
