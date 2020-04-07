@@ -16,7 +16,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  dropbox:
+  dropbox_client:
     path: ../
 
 flutter:

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:dropbox/dropbox.dart';
+import 'package:dropbox_client/dropbox_client.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const String dropbox_clientId = 'test-flutter-dropbox';

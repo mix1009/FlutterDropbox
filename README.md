@@ -76,7 +76,7 @@ If you need more help setting up for iOS, please read https://github.com/dropbox
 ## Usage
 
 ```
-import 'package:dropbox/dropbox.dart';
+import 'package:dropbox_client/dropbox_client.dart';
 
 Future initDropbox() async {
     // init dropbox client. (call only once!)

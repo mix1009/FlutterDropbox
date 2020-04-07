@@ -1,7 +1,7 @@
-name: dropbox
+name: dropbox_client
 description: Dropbox flutter plugin
 version: 0.5.0
-author: ChunKoo Park <mix1009@gmail.com>
+#author: ChunKoo Park <mix1009@gmail.com>
 homepage: https://github.com/mix1009/FlutterDropbox
 
 environment:
