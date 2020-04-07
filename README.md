@@ -25,7 +25,7 @@ For Android, add below in AndroidManifest.xml (replace DROPBOXKEY with your key)
             </intent-filter>
         </activity>
 
-If you need more help settings up Android, please read https://github.com/dropbox/dropbox-sdk-java#setup .
+If you need more help setting up Android, please read https://github.com/dropbox/dropbox-sdk-java#setup .
 
 
 For iOS, 
@@ -70,7 +70,7 @@ For iOS,
           return NO;
         }
         
-If you need more help settings up for iOS, please read https://github.com/dropbox/dropbox-sdk-obj-c#get-started .
+If you need more help setting up for iOS, please read https://github.com/dropbox/dropbox-sdk-obj-c#get-started .
 
 
 ## Usage
@@ -86,6 +86,7 @@ Future initDropbox() async {
 String accessToken;
 
 Future testLogin() async {
+  // this will run Dropbox app if possible, if not it will run authorization using a web browser.
   await Dropbox.authorize();
 }
 
