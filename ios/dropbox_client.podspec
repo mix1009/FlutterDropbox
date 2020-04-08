@@ -3,13 +3,13 @@
 # Run `pod lib lint dropbox.podspec' to validate before publishing.
 #
 Pod::Spec.new do |s|
-  s.name             = 'dropbox'
-  s.version          = '0.0.1'
-  s.summary          = 'A new flutter plugin project.'
+  s.name             = 'dropbox_client'
+  s.version          = '0.5.1'
+  s.summary          = 'Dropbox client for Flutter'
   s.description      = <<-DESC
 A new flutter plugin project.
                        DESC
-  s.homepage         = 'http://example.com'
+  s.homepage         = 'https://github.com/mix1009/FlutterDropbox'
   s.license          = { :file => '../LICENSE' }
   s.author           = { 'Your Company' => 'email@example.com' }
   s.source           = { :path => '.' }

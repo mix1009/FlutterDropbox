@@ -1,6 +1,7 @@
 name: dropbox_example
 description: Demonstrates how to use the dropbox plugin.
 publish_to: 'none'
+version: 0.5.1
 
 environment:
   sdk: ">=2.1.0 <3.0.0"

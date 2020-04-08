@@ -1,0 +1,47 @@
+PODS:
+  - dropbox_client (0.5.1):
+    - Flutter
+    - ObjectiveDropboxOfficial
+  - Flutter (1.0.0)
+  - ObjectiveDropboxOfficial (3.0.15)
+  - shared_preferences (0.0.1):
+    - Flutter
+  - shared_preferences_macos (0.0.1):
+    - Flutter
+  - shared_preferences_web (0.0.1):
+    - Flutter
+
+DEPENDENCIES:
+  - dropbox_client (from `.symlinks/plugins/dropbox_client/ios`)
+  - Flutter (from `Flutter`)
+  - shared_preferences (from `.symlinks/plugins/shared_preferences/ios`)
+  - shared_preferences_macos (from `.symlinks/plugins/shared_preferences_macos/ios`)
+  - shared_preferences_web (from `.symlinks/plugins/shared_preferences_web/ios`)
+
+SPEC REPOS:
+  trunk:
+    - ObjectiveDropboxOfficial
+
+EXTERNAL SOURCES:
+  dropbox_client:
+    :path: ".symlinks/plugins/dropbox_client/ios"
+  Flutter:
+    :path: Flutter
+  shared_preferences:
+    :path: ".symlinks/plugins/shared_preferences/ios"
+  shared_preferences_macos:
+    :path: ".symlinks/plugins/shared_preferences_macos/ios"
+  shared_preferences_web:
+    :path: ".symlinks/plugins/shared_preferences_web/ios"
+
+SPEC CHECKSUMS:
+  dropbox_client: 4dea80be4e292542a2288562d4959d23903b8baf
+  Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
+  ObjectiveDropboxOfficial: 69d6d3831e41cf4918e0374b0d1fcb620b238791
+  shared_preferences: 430726339841afefe5142b9c1f50cb6bd7793e01
+  shared_preferences_macos: f3f29b71ccbb56bf40c9dd6396c9acf15e214087
+  shared_preferences_web: 141cce0c3ed1a1c5bf2a0e44f52d31eeb66e5ea9
+
+PODFILE CHECKSUM: 3dbe063e9c90a5d7c9e4e76e70a821b9e2c1d271
+
+COCOAPODS: 1.8.4
