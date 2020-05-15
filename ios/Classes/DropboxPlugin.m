@@ -150,7 +150,27 @@
               NSLog(@"dbError = %@", dbError);
           }
       }];
+  } else if ([@"upload" isEqualToString:call.method]) {
+      NSString *filepath = call.arguments[@"filepath"];
+      NSString *dropboxpath = call.arguments[@"dropboxpath"];
+      DBUserClient *client = [DBClientsManager authorizedClient];
+      DBFILESWriteMode *mode = [[DBFILESWriteMode alloc] initWithOverwrite];
 
+      NSError* error = nil;
+      NSData* fileData = [NSData dataWithContentsOfFile:filepath  options:0 error:&error];
+
+      [[[client.filesRoutes uploadData:dropboxpath mode:mode autorename:@(YES) clientModified:nil mute:@(NO) inputData:fileData]
+        setResponseBlock:^(DBFILESFileMetadata *dResult, DBFILESUploadError *routeError, DBRequestError *networkError) {
+          if (dResult) {
+              NSLog(@"%@\n", dResult);
+              result(@(TRUE));
+          } else {
+              NSLog(@"%@\n%@\n", routeError, networkError);
+              result(@(FALSE));
+          }
+      }] setProgressBlock:^(int64_t bytesUploaded, int64_t totalBytesUploaded, int64_t totalBytesExpectedToUploaded) {
+          NSLog(@"\n%lld\n%lld\n%lld\n", bytesUploaded, totalBytesUploaded, totalBytesExpectedToUploaded);
+      }];
   } else {
       NSLog(@"%@", call.method);
       NSLog(@"%@", call.arguments);

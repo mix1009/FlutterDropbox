@@ -114,7 +114,8 @@ class _HomeState extends State<Home> {
     if (await checkAuthorized(true)) {
       var tempDir = await getTemporaryDirectory();
       var filepath = '${tempDir.path}/a.txt';
-      File(filepath).writeAsStringSync('contents..\n');
+      File(filepath).writeAsStringSync(
+          'contents.. from ' + (Platform.isIOS ? 'iOS' : 'Android') + '\n');
 
       final result = await Dropbox.upload(filepath, '/a.txt');
       print(result);
