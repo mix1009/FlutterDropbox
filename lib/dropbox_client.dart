@@ -63,4 +63,10 @@ class Dropbox {
   static Future<String> getTemporaryLink(String path) async {
     return await _channel.invokeMethod('getTemporaryLink', {'path': path});
   }
+
+  /// upload local file in filepath to dropboxpath.
+  static Future upload(String filepath, String dropboxpath) async {
+    return await _channel.invokeMethod(
+        'upload', {'filepath': filepath, 'dropboxpath': dropboxpath});
+  }
 }

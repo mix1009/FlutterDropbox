@@ -10,7 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
   shared_preferences: ^0.5.6+3
-
+  path_provider: ^1.6.8
   cupertino_icons: ^0.1.2
 
 dev_dependencies:

@@ -24,6 +24,7 @@ import com.dropbox.core.DbxException;
 import com.dropbox.core.DbxRequestConfig;
 import com.dropbox.core.DbxWebAuth;
 import com.dropbox.core.android.Auth;
+import com.dropbox.core.util.IOUtil;
 import com.dropbox.core.v2.DbxClientV2;
 import com.dropbox.core.v2.files.FileMetadata;
 import com.dropbox.core.v2.files.FolderMetadata;
@@ -32,9 +33,14 @@ import com.dropbox.core.v2.files.ListFolderResult;
 import com.dropbox.core.v2.files.MediaInfo;
 import com.dropbox.core.v2.files.MediaMetadata;
 import com.dropbox.core.v2.files.Metadata;
+import com.dropbox.core.v2.files.UploadBuilder;
 import com.dropbox.core.v2.users.FullAccount;
 import com.dropbox.core.http.OkHttp3Requestor;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -201,6 +207,12 @@ public class DropboxPlugin implements FlutterPlugin, MethodCallHandler, Activity
         token = this.accessToken;
       }
       result.success(token);
+    } else if (call.method.equals("upload")) {
+      String filepath = call.argument("filepath");
+      String dropboxpath = call.argument("dropboxpath");
+
+      if (!checkClient(result)) return;
+      (new UploadTask(result)).execute(filepath, dropboxpath);
 
     } else {
       result.notImplemented();
@@ -360,5 +372,49 @@ public class DropboxPlugin implements FlutterPlugin, MethodCallHandler, Activity
     }
   }
 
+  class UploadTask extends AsyncTask<String, Void, String> {
+    Result result;
+    List<Object> paths = new ArrayList<>();
+
+    private UploadTask(Result _result) {
+      result = _result;
+    }
+
+    @Override
+    protected String doInBackground(String... argPaths) {
+
+      UploadBuilder uploadBuilder = null;
+        try {
+          InputStream in = new FileInputStream(argPaths[0]);
+
+          uploadBuilder = DropboxPlugin.client.files().uploadBuilder(argPaths[1]);
+
+          uploadBuilder.uploadAndFinish(in, new IOUtil.ProgressListener() {
+            @Override
+            public void onProgress(long bytesWritten) {
+
+            }
+          });
+
+        } catch (FileNotFoundException e) {
+          e.printStackTrace();
+          return e.getMessage();
+        } catch (IOException e) {
+          e.printStackTrace();
+        } catch (DbxException e) {
+        e.printStackTrace();
+        return e.getMessage();
+        }
+
+      return "";
+    }
+
+    @Override
+    protected void onPostExecute(String r) {
+      super.onPostExecute(r);
+      result.success(paths);
+    }
+
+  }
 }
 

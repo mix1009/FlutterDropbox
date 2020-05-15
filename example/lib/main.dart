@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:dropbox_client/dropbox_client.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const String dropbox_clientId = 'test-flutter-dropbox';
@@ -107,6 +110,17 @@ class _HomeState extends State<Home> {
     }
   }
 
+  Future uploadTest() async {
+    if (await checkAuthorized(true)) {
+      var tempDir = await getTemporaryDirectory();
+      var filepath = '${tempDir.path}/a.txt';
+      File(filepath).writeAsStringSync('contents..\n');
+
+      final result = await Dropbox.upload(filepath, '/a.txt');
+      print(result);
+    }
+  }
+
   Future<String> getTemporaryLink(path) async {
     final result = await Dropbox.getTemporaryLink(path);
     return result;
@@ -144,6 +158,12 @@ class _HomeState extends State<Home> {
                           child: Text('list root folder'),
                           onPressed: () async {
                             await listFolder('');
+                          },
+                        ),
+                        RaisedButton(
+                          child: Text('test upload'),
+                          onPressed: () async {
+                            await uploadTest();
                           },
                         ),
                       ],
