@@ -113,11 +113,14 @@ class _HomeState extends State<Home> {
   Future uploadTest() async {
     if (await checkAuthorized(true)) {
       var tempDir = await getTemporaryDirectory();
-      var filepath = '${tempDir.path}/a.txt';
+      var filepath = '${tempDir.path}/test_upload.txt';
       File(filepath).writeAsStringSync(
           'contents.. from ' + (Platform.isIOS ? 'iOS' : 'Android') + '\n');
 
-      final result = await Dropbox.upload(filepath, '/a.txt');
+      final result =
+          await Dropbox.upload(filepath, '/test_upload.txt', (uploaded, total) {
+        print('progress $uploaded / $total');
+      });
       print(result);
     }
   }

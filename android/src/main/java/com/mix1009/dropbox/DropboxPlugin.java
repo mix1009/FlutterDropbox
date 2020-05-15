@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.StrictMode;
 import android.util.Log;
 
@@ -34,6 +36,7 @@ import com.dropbox.core.v2.files.MediaInfo;
 import com.dropbox.core.v2.files.MediaMetadata;
 import com.dropbox.core.v2.files.Metadata;
 import com.dropbox.core.v2.files.UploadBuilder;
+import com.dropbox.core.v2.files.WriteMode;
 import com.dropbox.core.v2.users.FullAccount;
 import com.dropbox.core.http.OkHttp3Requestor;
 
@@ -210,9 +213,10 @@ public class DropboxPlugin implements FlutterPlugin, MethodCallHandler, Activity
     } else if (call.method.equals("upload")) {
       String filepath = call.argument("filepath");
       String dropboxpath = call.argument("dropboxpath");
+      int key = call.argument("key");
 
       if (!checkClient(result)) return;
-      (new UploadTask(result)).execute(filepath, dropboxpath);
+      (new UploadTask(channel, key, result)).execute(filepath, dropboxpath);
 
     } else {
       result.notImplemented();
@@ -374,9 +378,13 @@ public class DropboxPlugin implements FlutterPlugin, MethodCallHandler, Activity
 
   class UploadTask extends AsyncTask<String, Void, String> {
     Result result;
+    int key;
+    MethodChannel channel;
     List<Object> paths = new ArrayList<>();
 
-    private UploadTask(Result _result) {
+    private UploadTask(MethodChannel _channel, int _key, Result _result) {
+      channel = _channel;
+      key = _key;
       result = _result;
     }
 
@@ -387,11 +395,22 @@ public class DropboxPlugin implements FlutterPlugin, MethodCallHandler, Activity
         try {
           InputStream in = new FileInputStream(argPaths[0]);
 
-          uploadBuilder = DropboxPlugin.client.files().uploadBuilder(argPaths[1]);
+          uploadBuilder = DropboxPlugin.client.files().uploadBuilder(argPaths[1]).withMode(WriteMode.OVERWRITE).withAutorename(true).withMute(false);
 
           uploadBuilder.uploadAndFinish(in, new IOUtil.ProgressListener() {
             @Override
             public void onProgress(long bytesWritten) {
+              final long written = bytesWritten;
+              new Handler(Looper.getMainLooper()).post(new Runnable () {
+                @Override
+                public void run () {
+                  // MUST RUN ON MAIN THREAD !
+                  List<Long> ret = new ArrayList<Long>();
+                  ret.add((long)key);
+                  ret.add(written);
+                  channel.invokeMethod("progress", ret, null);
+                }
+              });
 
             }
           });

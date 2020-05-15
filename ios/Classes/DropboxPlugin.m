@@ -6,9 +6,11 @@
 }
 @end
 
+FlutterMethodChannel* channel;
+
 @implementation DropboxPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-  FlutterMethodChannel* channel = [FlutterMethodChannel
+  channel = [FlutterMethodChannel
       methodChannelWithName:@"dropbox"
             binaryMessenger:[registrar messenger]];
   DropboxPlugin* instance = [[DropboxPlugin alloc] init];
@@ -153,6 +155,7 @@
   } else if ([@"upload" isEqualToString:call.method]) {
       NSString *filepath = call.arguments[@"filepath"];
       NSString *dropboxpath = call.arguments[@"dropboxpath"];
+      NSNumber *key = call.arguments[@"key"];
       DBUserClient *client = [DBClientsManager authorizedClient];
       DBFILESWriteMode *mode = [[DBFILESWriteMode alloc] initWithOverwrite];
 
@@ -170,6 +173,7 @@
           }
       }] setProgressBlock:^(int64_t bytesUploaded, int64_t totalBytesUploaded, int64_t totalBytesExpectedToUploaded) {
           NSLog(@"\n%lld\n%lld\n%lld\n", bytesUploaded, totalBytesUploaded, totalBytesExpectedToUploaded);
+          [channel invokeMethod:@"progress" arguments:@[key, @(bytesUploaded)]];
       }];
   } else {
       NSLog(@"%@", call.method);
