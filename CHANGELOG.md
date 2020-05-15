@@ -1,3 +1,7 @@
+## 0.6.0
+
+* add upload function..
+
 ## 0.5.3
 
 * fix publish error

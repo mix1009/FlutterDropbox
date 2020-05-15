@@ -105,6 +105,13 @@ Future testListFolder() async {
   final url = await Dropbox.getTemporaryLink('/file.txt');
   print(url);
 }
+
+Future testUpload() async {
+  final filepath = '/path/to/local/file.txt';
+  final result = await Dropbox.upload(filepath, '/file.txt', (uploaded, total) {
+    print('progress $uploaded / $total');
+  });
+}
 ```
 
 Example can be found in example folder.
