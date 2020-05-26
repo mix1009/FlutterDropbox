@@ -1,6 +1,12 @@
+## 0.7.0  (2020/05/26)
+
+* add download function.
+* update ios deployment target to 9.0
+* fix upload progress bug(not correctly reports cumulative bytes)
+
 ## 0.6.0
 
-* add upload function..
+* add upload function.
 
 ## 0.5.3
 

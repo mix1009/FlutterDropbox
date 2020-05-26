@@ -128,11 +128,11 @@ class _HomeState extends State<Home> {
   Future downloadTest() async {
     if (await checkAuthorized(true)) {
       var tempDir = await getTemporaryDirectory();
-      var filepath = '${tempDir.path}/testDownload2.zip'; // for iOS only!!
+      var filepath = '${tempDir.path}/test_download.zip'; // for iOS only!!
       print(filepath);
 
-      final result = await Dropbox.download(
-          '/panache_macos_20200525a.zip', filepath, (downloaded, total) {
+      final result = await Dropbox.download('/file_in_dropbox.zip', filepath,
+          (downloaded, total) {
         print('progress $downloaded / $total');
       });
 

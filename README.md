@@ -69,6 +69,8 @@ For iOS,
           }
           return NO;
         }
+
+4) Update Deployment Target to iOS 9.0 or above from Xcode. (dropbox_client 0.7.0 and above)
         
 If you need more help setting up for iOS, please read https://github.com/dropbox/dropbox-sdk-obj-c#get-started .
 
@@ -110,6 +112,13 @@ Future testUpload() async {
   final filepath = '/path/to/local/file.txt';
   final result = await Dropbox.upload(filepath, '/file.txt', (uploaded, total) {
     print('progress $uploaded / $total');
+  });
+}
+
+Future testDownload() async {
+  final filepath = '/path/to/local/file.txt';
+  final result = await Dropbox.download('/dropbox_file.txt', filepath, (downloaded, total) {
+    print('progress $downloaded / $total');
   });
 }
 ```
