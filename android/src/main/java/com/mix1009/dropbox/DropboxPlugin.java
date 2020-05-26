@@ -22,12 +22,14 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
 
 import com.dropbox.core.DbxAppInfo;
 import com.dropbox.core.DbxAuthFinish;
+import com.dropbox.core.DbxDownloader;
 import com.dropbox.core.DbxException;
 import com.dropbox.core.DbxRequestConfig;
 import com.dropbox.core.DbxWebAuth;
 import com.dropbox.core.android.Auth;
 import com.dropbox.core.util.IOUtil;
 import com.dropbox.core.v2.DbxClientV2;
+import com.dropbox.core.v2.files.DownloadBuilder;
 import com.dropbox.core.v2.files.FileMetadata;
 import com.dropbox.core.v2.files.FolderMetadata;
 import com.dropbox.core.v2.files.GetTemporaryLinkResult;
@@ -40,10 +42,13 @@ import com.dropbox.core.v2.files.WriteMode;
 import com.dropbox.core.v2.users.FullAccount;
 import com.dropbox.core.http.OkHttp3Requestor;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -217,6 +222,14 @@ public class DropboxPlugin implements FlutterPlugin, MethodCallHandler, Activity
 
       if (!checkClient(result)) return;
       (new UploadTask(channel, key, result)).execute(filepath, dropboxpath);
+
+    } else if (call.method.equals("download")) {
+      String filepath = call.argument("filepath");
+      String dropboxpath = call.argument("dropboxpath");
+      int key = call.argument("key");
+
+      if (!checkClient(result)) return;
+      (new DownloadTask(channel, key, result)).execute(dropboxpath, filepath);
 
     } else {
       result.notImplemented();
@@ -429,6 +442,74 @@ public class DropboxPlugin implements FlutterPlugin, MethodCallHandler, Activity
     }
 
     @Override
+    protected void onPostExecute(String r) {
+      super.onPostExecute(r);
+      result.success(paths);
+    }
+
+  }
+
+  class DownloadTask extends AsyncTask<String, Void, String> {
+    Result result;
+    int key;
+    long fileSize;
+    MethodChannel channel;
+    List<Object> paths = new ArrayList<>();
+
+    private DownloadTask(MethodChannel _channel, int _key, Result _result) {
+      channel = _channel;
+      key = _key;
+      result = _result;
+    }
+
+    @Override
+    protected String doInBackground(String... argPaths) {
+
+      try {
+        fileSize = 0;
+        Metadata metadata = client.files().getMetadata(argPaths[0]);
+
+        if (metadata instanceof FileMetadata) {
+          FileMetadata fileMetadata = (FileMetadata) metadata;
+          fileSize = fileMetadata.getSize();
+        }
+
+        DbxDownloader<FileMetadata> downloader = client.files().download(argPaths[0]);
+        OutputStream out = new FileOutputStream(argPaths[1]);
+        downloader.download(out, new IOUtil.ProgressListener() {
+          @Override
+          public void onProgress(long bytesRead) {
+            final long read = bytesRead;
+            new Handler(Looper.getMainLooper()).post(new Runnable () {
+              @Override
+              public void run () {
+                // MUST RUN ON MAIN THREAD !
+                List<Long> ret = new ArrayList<Long>();
+                ret.add((long)key);
+                ret.add(read);
+                ret.add(fileSize);
+                channel.invokeMethod("progress", ret, null);
+              }
+            });
+
+          }
+        });
+
+      } catch (FileNotFoundException e) {
+        e.printStackTrace();
+        return e.getMessage();
+
+      } catch (IOException e) {
+        e.printStackTrace();
+      } catch (DbxException e) {
+        e.printStackTrace();
+        return e.getMessage();
+      }
+
+      return "";
+    }
+
+      @Override
     protected void onPostExecute(String r) {
       super.onPostExecute(r);
       result.success(paths);

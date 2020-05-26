@@ -31,12 +31,16 @@ class Dropbox {
   static Future<void> _handleMethodCall(MethodCall call) async {
     // print('_handleMethodCall: ' + call.method);
     // print(call.arguments);
-    var key = call.arguments[0];
-    var bytes = call.arguments[1];
+    var args = call.arguments as List;
+    var key = args[0];
+    var bytes = args[1];
 
     if (_callbackMap.containsKey(key)) {
       final info = _callbackMap[key];
       if (info.callback != null) {
+        if (info.filesize == 0 && args.length > 2) {
+          info.filesize = args[2];
+        }
         info.callback(bytes, info.filesize);
       }
     }
@@ -105,6 +109,24 @@ class Dropbox {
     _callbackMap[key] = _CallbackInfo(fileSize, callback);
 
     final ret = await _channel.invokeMethod('upload',
+        {'filepath': filepath, 'dropboxpath': dropboxpath, 'key': key});
+
+    _callbackMap.remove(key);
+
+    return ret;
+  }
+
+  /// download file from dropboxpath to local file(filepath).
+  ///
+  /// filepath is local file path. dropboxpath should start with /.
+  /// callback for monitoring progress : (downloadedBytes, totalExpectedBytes) { } (can be null)
+  static Future download(String dropboxpath, String filepath,
+      DropboxProgressCallback callback) async {
+    final key = ++_callbackInt;
+
+    _callbackMap[key] = _CallbackInfo(0, callback);
+
+    final ret = await _channel.invokeMethod('download',
         {'filepath': filepath, 'dropboxpath': dropboxpath, 'key': key});
 
     _callbackMap.remove(key);

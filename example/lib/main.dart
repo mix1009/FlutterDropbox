@@ -125,6 +125,22 @@ class _HomeState extends State<Home> {
     }
   }
 
+  Future downloadTest() async {
+    if (await checkAuthorized(true)) {
+      var tempDir = await getTemporaryDirectory();
+      var filepath = '${tempDir.path}/testDownload2.zip'; // for iOS only!!
+      print(filepath);
+
+      final result = await Dropbox.download(
+          '/panache_macos_20200525a.zip', filepath, (downloaded, total) {
+        print('progress $downloaded / $total');
+      });
+
+      print(result);
+      print(File(filepath).statSync());
+    }
+  }
+
   Future<String> getTemporaryLink(path) async {
     final result = await Dropbox.getTemporaryLink(path);
     return result;
@@ -168,6 +184,12 @@ class _HomeState extends State<Home> {
                           child: Text('test upload'),
                           onPressed: () async {
                             await uploadTest();
+                          },
+                        ),
+                        RaisedButton(
+                          child: Text('test download'),
+                          onPressed: () async {
+                            await downloadTest();
                           },
                         ),
                       ],

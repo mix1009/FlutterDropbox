@@ -46,14 +46,23 @@ FlutterMethodChannel* channel;
 }
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
-  if ([@"getPlatformVersion" isEqualToString:call.method]) {
-    result([@"iOS " stringByAppendingString:[[UIDevice currentDevice] systemVersion]]);
-  } else if ([@"init" isEqualToString:call.method]) {
-//      NSString *clientId = call.arguments[@"clientId"];
-      NSString *key = call.arguments[@"key"];
-//      NSString *secret = call.arguments[@"secret"];
-      appKey = key;
+    if ([@"getPlatformVersion" isEqualToString:call.method]) {
+        result([@"iOS " stringByAppendingString:[[UIDevice currentDevice] systemVersion]]);
+    } else if ([@"init" isEqualToString:call.method]) {
+//        NSString *clientId = call.arguments[@"clientId"];
+        NSString *key = call.arguments[@"key"];
+//        NSString *secret = call.arguments[@"secret"];
+        appKey = key;
+
+//#define DOWNLOAD_ERROR_WORKAROUND
+#ifdef DOWNLOAD_ERROR_WORKAROUND
+        DBTransportDefaultConfig *transportConfiguration = [[DBTransportDefaultConfig alloc] initWithAppKey:key forceForegroundSession:YES];
+        // forceForegroundSession: fixes download error on some devices (https://github.com/dropbox/dropbox-sdk-obj-c/issues/258)
+        [DBClientsManager setupWithTransportConfig: transportConfiguration];
+#else
       [DBClientsManager setupWithAppKey: key];
+#endif
+      
       result([NSNumber numberWithBool:TRUE]);
 
   } else if ([@"authorize" isEqualToString:call.method]) {
@@ -89,13 +98,10 @@ FlutterMethodChannel* channel;
   } else if ([@"authorizeWithAccessToken" isEqualToString:call.method]) {
       NSString *accessToken = call.arguments[@"accessToken"];
 
-//      NSLog(@"clients = %@", [DBClientsManager authorizedClients]);
       [DBClientsManager authorizeClientFromKeychain:accessToken];
-//      NSLog(@"clients = %@", [DBClientsManager authorizedClients]);
 
       result(@(TRUE));
       
-
   } else if ([@"getAccountName" isEqualToString:call.method]) {
       DBUserClient *client = [DBClientsManager authorizedClient];
       
@@ -127,6 +133,7 @@ FlutterMethodChannel* channel;
               
         } else {
           NSLog(@"%@\n%@\n", routeError, networkError);
+            result(@[]);
         }
       }];
 
@@ -162,7 +169,7 @@ FlutterMethodChannel* channel;
       NSError* error = nil;
       NSData* fileData = [NSData dataWithContentsOfFile:filepath  options:0 error:&error];
 
-      [[[client.filesRoutes uploadData:dropboxpath mode:mode autorename:@(YES) clientModified:nil mute:@(NO) inputData:fileData]
+      [[[client.filesRoutes uploadData:dropboxpath mode:mode autorename:@(YES) clientModified:nil mute:@(NO) propertyGroups:nil strictConflict: nil inputData:fileData]
         setResponseBlock:^(DBFILESFileMetadata *dResult, DBFILESUploadError *routeError, DBRequestError *networkError) {
           if (dResult) {
               NSLog(@"%@\n", dResult);
@@ -173,7 +180,33 @@ FlutterMethodChannel* channel;
           }
       }] setProgressBlock:^(int64_t bytesUploaded, int64_t totalBytesUploaded, int64_t totalBytesExpectedToUploaded) {
           NSLog(@"\n%lld\n%lld\n%lld\n", bytesUploaded, totalBytesUploaded, totalBytesExpectedToUploaded);
-          [channel invokeMethod:@"progress" arguments:@[key, @(bytesUploaded)]];
+          [channel invokeMethod:@"progress" arguments:@[key, @(totalBytesUploaded)]];
+      }];
+      
+  } else if ([@"download" isEqualToString:call.method]) {
+      NSString *filepath = call.arguments[@"filepath"];
+      NSString *dropboxpath = call.arguments[@"dropboxpath"];
+      NSNumber *key = call.arguments[@"key"];
+      NSURL *fileUrl = [NSURL fileURLWithPath:filepath isDirectory:NO];
+      DBUserClient *client = [DBClientsManager authorizedClient];
+      
+//      NSLog(@"fileUrl = %@", fileUrl);
+      
+      [[[client.filesRoutes downloadUrl:dropboxpath overwrite:YES destination:fileUrl]
+          setResponseBlock:^(DBFILESFileMetadata *dResult, DBFILESDownloadError *routeError, DBRequestError *networkError,
+                             NSURL *destination) {
+            if (dResult) {
+                NSLog(@"%@\n", dResult);
+                result(@(TRUE));
+
+            } else {
+                NSLog(@"ERROR!! %@\n%@\n", routeError, networkError);
+                result(@(FALSE));
+
+            }
+          }] setProgressBlock:^(int64_t bytesDownloaded, int64_t totalBytesDownloaded, int64_t totalBytesExpectedToDownload) {
+              [channel invokeMethod:@"progress" arguments:@[key, @(totalBytesDownloaded), @(totalBytesExpectedToDownload)]];
+
       }];
   } else {
       NSLog(@"%@", call.method);
