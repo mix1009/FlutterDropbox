@@ -27,8 +27,10 @@ import com.dropbox.core.DbxException;
 import com.dropbox.core.DbxRequestConfig;
 import com.dropbox.core.DbxWebAuth;
 import com.dropbox.core.android.Auth;
+import com.dropbox.core.android.AuthActivity;
 import com.dropbox.core.util.IOUtil;
 import com.dropbox.core.v2.DbxClientV2;
+import com.dropbox.core.v2.auth.DbxUserAuthRequests;
 import com.dropbox.core.v2.files.DownloadBuilder;
 import com.dropbox.core.v2.files.FileMetadata;
 import com.dropbox.core.v2.files.FolderMetadata;
@@ -142,9 +144,7 @@ public class DropboxPlugin implements FlutterPlugin, MethodCallHandler, Activity
 
   @Override
   public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
-    if (call.method.equals("logout")) {
-      client = null;
-    } else if (call.method.equals("init")) {
+    if (call.method.equals("init")) {
       String clientId = call.argument("clientId");
       String key = call.argument("key");
       String secret = call.argument("secret");
@@ -154,7 +154,6 @@ public class DropboxPlugin implements FlutterPlugin, MethodCallHandler, Activity
       sDbxRequestConfig = DbxRequestConfig.newBuilder(clientId)
               .withHttpRequestor(new OkHttp3Requestor(OkHttp3Requestor.defaultOkHttpClient()))
               .build();
-
 
       result.success(true);
 
@@ -187,6 +186,12 @@ public class DropboxPlugin implements FlutterPlugin, MethodCallHandler, Activity
       String authorizeUrl = webAuth.authorize(webAuthRequest);
       result.success(authorizeUrl);
 
+    } else if (call.method.equals("unlink")) {
+      client = null;
+      accessToken = null;
+      AuthActivity.result = null;
+      // call DbxUserAuthRequests.tokenRevoke(); ?
+
     } else if (call.method.equals("finishAuth")) {
       String code = call.argument("code");
       (new FinishAuthTask(webAuth, result, code)).execute("");
@@ -210,6 +215,7 @@ public class DropboxPlugin implements FlutterPlugin, MethodCallHandler, Activity
       (new TemporaryLinkTask(result)).execute(path);
 
     } else if (call.method.equals("getAccessToken")) {
+//      result.success(accessToken);
       String token = Auth.getOAuth2Token();
       if (token == null) {
         token = this.accessToken;

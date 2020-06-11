@@ -81,6 +81,11 @@ class _HomeState extends State<Home> {
     await Dropbox.authorize();
   }
 
+  Future unlink() async {
+    await deleteAccessToken();
+    await Dropbox.unlink();
+  }
+
   Future authorizeWithAccessToken() async {
     await Dropbox.authorizeWithAccessToken(accessToken);
   }
@@ -173,6 +178,10 @@ class _HomeState extends State<Home> {
                           onPressed: accessToken == null
                               ? null
                               : authorizeWithAccessToken,
+                        ),
+                        RaisedButton(
+                          child: Text('unlink'),
+                          onPressed: unlink,
                         ),
                         RaisedButton(
                           child: Text('list root folder'),

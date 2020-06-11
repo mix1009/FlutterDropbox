@@ -141,6 +141,9 @@ FlutterMethodChannel* channel;
       DBUserClient *client = [DBClientsManager authorizedClient];
       result(client.accessToken);
       
+  } else if ([@"unlink" isEqualToString:call.method]) {
+      [DBClientsManager unlinkAndResetClients];
+      
   } else if ([@"getTemporaryLink" isEqualToString:call.method]) {
       DBUserClient *client = [DBClientsManager authorizedClient];
       NSString *path = call.arguments[@"path"];

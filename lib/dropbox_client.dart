@@ -54,6 +54,11 @@ class Dropbox {
     await _channel.invokeMethod('authorize');
   }
 
+  /// Unlink account (remove authorization).
+  static Future<void> unlink() async {
+    await _channel.invokeMethod('unlink');
+  }
+
   /// Authorize with AccessToken
   ///
   /// use getAccessToken() to get Access Token after successful authorize().
@@ -102,7 +107,7 @@ class Dropbox {
   /// filepath is local file path. dropboxpath should start with /.
   /// callback for monitoring progress : (uploadedBytes, totalBytes) { } (can be null)
   static Future upload(String filepath, String dropboxpath,
-      DropboxProgressCallback callback) async {
+      [DropboxProgressCallback callback]) async {
     final fileSize = File(filepath).lengthSync();
     final key = ++_callbackInt;
 
@@ -121,7 +126,7 @@ class Dropbox {
   /// filepath is local file path. dropboxpath should start with /.
   /// callback for monitoring progress : (downloadedBytes, totalExpectedBytes) { } (can be null)
   static Future download(String dropboxpath, String filepath,
-      DropboxProgressCallback callback) async {
+      [DropboxProgressCallback callback]) async {
     final key = ++_callbackInt;
 
     _callbackMap[key] = _CallbackInfo(0, callback);
