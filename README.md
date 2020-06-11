@@ -1,4 +1,6 @@
-# dropbox
+# dropbox client
+
+[![pub package](https://img.shields.io/pub/v/dropbox_client.svg)](https://pub.dartlang.org/packages/dropbox_client)
 
 A flutter plugin for accessing Dropbox.
 
@@ -51,7 +53,25 @@ For iOS,
             </dict>
           </array>
           
-3) Add below code to AppDelegate.m
+3.a) If you are using Swift, add below code to AppDelegate.swift
+
+        import ObjectiveDropboxOfficial
+
+        // should be inside AppDelegate class
+        override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+          if let authResult = DBClientsManager.handleRedirectURL(url) {
+              if authResult.isSuccess() {
+                  print("dropbox auth success")
+              } else if (authResult.isCancel()) {
+                  print("dropbox auth cancel")
+              } else if (authResult.isError()) {
+                  print("dropbox auth error \(authResult.errorDescription)")
+              }
+          }
+          return true
+        }
+
+3.b) If you are using Objective C, add below code to AppDelegate.m
 
         #import <ObjectiveDropboxOfficial/ObjectiveDropboxOfficial.h>
 
@@ -98,6 +118,11 @@ Future getAccessToken() async {
 
 Future loginWithAccessToken() async {
   await Dropbox.authorizeWithAccessToken(accessToken);
+}
+
+Future testLogout() async {
+  // unlink removes authorization
+  await Dropbox.unlink();
 }
 
 Future testListFolder() async {

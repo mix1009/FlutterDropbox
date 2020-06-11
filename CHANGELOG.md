@@ -1,3 +1,9 @@
+## 0.7.1  (2020/06/11)
+
+* add unlink (logout) function
+* make download/upload progress callback optional
+* add documentation for swift integration
+
 ## 0.7.0  (2020/05/26)
 
 * add download function.
