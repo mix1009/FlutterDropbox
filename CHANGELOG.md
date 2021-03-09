@@ -1,3 +1,7 @@
+## 0.8.0  (2021/03/09)
+
+* null safety
+
 ## 0.7.1  (2020/06/11)
 
 * add unlink (logout) function

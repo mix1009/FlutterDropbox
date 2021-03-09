@@ -27,7 +27,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  String accessToken;
+  String? accessToken;
   bool showInstruction = false;
 
   @override
@@ -54,16 +54,16 @@ class _HomeState extends State<Home> {
   Future<bool> checkAuthorized(bool authorize) async {
     final token = await Dropbox.getAccessToken();
     if (token != null) {
-      if (accessToken == null || accessToken.isEmpty) {
+      if (accessToken == null || accessToken!.isEmpty) {
         accessToken = token;
         SharedPreferences prefs = await SharedPreferences.getInstance();
-        prefs.setString('dropboxAccessToken', accessToken);
+        prefs.setString('dropboxAccessToken', accessToken!);
       }
       return true;
     }
     if (authorize) {
-      if (accessToken != null && accessToken.isNotEmpty) {
-        await Dropbox.authorizeWithAccessToken(accessToken);
+      if (accessToken != null && accessToken!.isNotEmpty) {
+        await Dropbox.authorizeWithAccessToken(accessToken!);
         final token = await Dropbox.getAccessToken();
         if (token != null) {
           print('authorizeWithAccessToken!');
@@ -87,7 +87,7 @@ class _HomeState extends State<Home> {
   }
 
   Future authorizeWithAccessToken() async {
-    await Dropbox.authorizeWithAccessToken(accessToken);
+    await Dropbox.authorizeWithAccessToken(accessToken!);
   }
 
   Future deleteAccessToken() async {
@@ -110,7 +110,8 @@ class _HomeState extends State<Home> {
     if (await checkAuthorized(true)) {
       final result = await Dropbox.listFolder(path);
       setState(() {
-        list = result;
+        list.clear();
+        list.addAll(result);
       });
     }
   }
@@ -146,12 +147,12 @@ class _HomeState extends State<Home> {
     }
   }
 
-  Future<String> getTemporaryLink(path) async {
+  Future<String?> getTemporaryLink(path) async {
     final result = await Dropbox.getTemporaryLink(path);
     return result;
   }
 
-  var list = List<dynamic>();
+  final list = List<dynamic>.empty(growable: true);
 
   @override
   Widget build(BuildContext context) {
@@ -169,33 +170,33 @@ class _HomeState extends State<Home> {
                   children: <Widget>[
                     Wrap(
                       children: <Widget>[
-                        RaisedButton(
+                        ElevatedButton(
                           child: Text('authorize'),
                           onPressed: authorize,
                         ),
-                        RaisedButton(
+                        ElevatedButton(
                           child: Text('authorizeWithAccessToken'),
                           onPressed: accessToken == null
                               ? null
                               : authorizeWithAccessToken,
                         ),
-                        RaisedButton(
+                        ElevatedButton(
                           child: Text('unlink'),
                           onPressed: unlink,
                         ),
-                        RaisedButton(
+                        ElevatedButton(
                           child: Text('list root folder'),
                           onPressed: () async {
                             await listFolder('');
                           },
                         ),
-                        RaisedButton(
+                        ElevatedButton(
                           child: Text('test upload'),
                           onPressed: () async {
                             await uploadTest();
                           },
                         ),
-                        RaisedButton(
+                        ElevatedButton(
                           child: Text('test download'),
                           onPressed: () async {
                             await downloadTest();
@@ -221,8 +222,9 @@ class _HomeState extends State<Home> {
                               title: Text(name),
                               onTap: () async {
                                 if (isFile) {
-                                  final link = await getTemporaryLink(path);
-                                  Scaffold.of(context).showSnackBar(
+                                  final link = await (getTemporaryLink(path)
+                                      as FutureOr<String>);
+                                  ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(content: Text(link)));
                                 } else {
                                   await listFolder(path);
@@ -241,7 +243,7 @@ class _HomeState extends State<Home> {
 
 class Instructions extends StatelessWidget {
   const Instructions({
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override

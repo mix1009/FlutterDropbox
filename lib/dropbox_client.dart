@@ -7,7 +7,7 @@ typedef DropboxProgressCallback = void Function(
 
 class _CallbackInfo {
   int filesize;
-  DropboxProgressCallback callback;
+  DropboxProgressCallback? callback;
 
   _CallbackInfo(this.filesize, this.callback);
 }
@@ -25,7 +25,8 @@ class Dropbox {
     _channel.setMethodCallHandler(_handleMethodCall);
 
     return await _channel.invokeMethod(
-        'init', {'clientId': clientId, 'key': key, 'secret': secret});
+            'init', {'clientId': clientId, 'key': key, 'secret': secret}) ??
+        false;
   }
 
   static Future<void> _handleMethodCall(MethodCall call) async {
@@ -36,12 +37,12 @@ class Dropbox {
     var bytes = args[1];
 
     if (_callbackMap.containsKey(key)) {
-      final info = _callbackMap[key];
+      final info = _callbackMap[key]!;
       if (info.callback != null) {
         if (info.filesize == 0 && args.length > 2) {
           info.filesize = args[2];
         }
-        info.callback(bytes, info.filesize);
+        info.callback!(bytes, info.filesize);
       }
     }
   }
@@ -78,13 +79,15 @@ class Dropbox {
 
   /// get Access Token after authorization.
   ///
-  /// returns null before authorization.
-  static Future<String> getAccessToken() async {
+  /// returns null if not authorized.
+  static Future<String?> getAccessToken() async {
     return await _channel.invokeMethod('getAccessToken');
   }
 
   /// get account name
-  static Future<String> getAccountName() async {
+  ///
+  /// return null if not authorized.
+  static Future<String?> getAccountName() async {
     return await _channel.invokeMethod('getAccountName');
   }
 
@@ -98,7 +101,7 @@ class Dropbox {
   /// get temporary link url for file
   ///
   /// returns url for accessing dropbox file.
-  static Future<String> getTemporaryLink(String path) async {
+  static Future<String?> getTemporaryLink(String path) async {
     return await _channel.invokeMethod('getTemporaryLink', {'path': path});
   }
 
@@ -107,7 +110,7 @@ class Dropbox {
   /// filepath is local file path. dropboxpath should start with /.
   /// callback for monitoring progress : (uploadedBytes, totalBytes) { } (can be null)
   static Future upload(String filepath, String dropboxpath,
-      [DropboxProgressCallback callback]) async {
+      [DropboxProgressCallback? callback]) async {
     final fileSize = File(filepath).lengthSync();
     final key = ++_callbackInt;
 
@@ -126,7 +129,7 @@ class Dropbox {
   /// filepath is local file path. dropboxpath should start with /.
   /// callback for monitoring progress : (downloadedBytes, totalExpectedBytes) { } (can be null)
   static Future download(String dropboxpath, String filepath,
-      [DropboxProgressCallback callback]) async {
+      [DropboxProgressCallback? callback]) async {
     final key = ++_callbackInt;
 
     _callbackMap[key] = _CallbackInfo(0, callback);
