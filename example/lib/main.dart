@@ -222,10 +222,11 @@ class _HomeState extends State<Home> {
                               title: Text(name),
                               onTap: () async {
                                 if (isFile) {
-                                  final link = await (getTemporaryLink(path)
-                                      as FutureOr<String>);
+                                  final link = await getTemporaryLink(path);
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text(link)));
+                                      SnackBar(
+                                          content: Text(link ??
+                                              'getTemporaryLink error: $path')));
                                 } else {
                                   await listFolder(path);
                                 }
