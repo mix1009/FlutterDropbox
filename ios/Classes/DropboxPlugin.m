@@ -172,19 +172,56 @@ FlutterMethodChannel* channel;
       NSError* error = nil;
       NSData* fileData = [NSData dataWithContentsOfFile:filepath  options:0 error:&error];
 
-      [[[client.filesRoutes uploadData:dropboxpath mode:mode autorename:@(YES) clientModified:nil mute:@(NO) propertyGroups:nil strictConflict: nil inputData:fileData]
-        setResponseBlock:^(DBFILESFileMetadata *dResult, DBFILESUploadError *routeError, DBRequestError *networkError) {
-          if (dResult) {
-              NSLog(@"%@\n", dResult);
-              result(@(TRUE));
-          } else {
-              NSLog(@"%@\n%@\n", routeError, networkError);
-              result(@(FALSE));
-          }
-      }] setProgressBlock:^(int64_t bytesUploaded, int64_t totalBytesUploaded, int64_t totalBytesExpectedToUploaded) {
-          NSLog(@"\n%lld\n%lld\n%lld\n", bytesUploaded, totalBytesUploaded, totalBytesExpectedToUploaded);
-          [channel invokeMethod:@"progress" arguments:@[key, @(totalBytesUploaded)]];
-      }];
+      if ([client.fileRequestsRoutes respondsToSelector:@selector(uploadData: mode: autorename: clientModified: mute: propertyGroups:strictConflict:contentHash:inputData:)]) {
+          SEL selector = NSSelectorFromString(@"uploadData: mode: autorename: clientModified: mute: propertyGroups: strictConflict: contentHash: inputData:");
+          IMP imp = [client.fileRequestsRoutes methodForSelector:selector];
+          DBUploadTask *(*func)(id, SEL, NSString *, DBFILESWriteMode *, NSNumber *, NSDate *, NSNumber *, NSArray<DBFILEPROPERTIESPropertyGroup *> *, NSNumber *, NSString *, NSData *) = (void *)imp;
+          DBUploadTask *task = func(client.fileRequestsRoutes, selector, dropboxpath, mode, @(YES), nil, @(NO), nil, nil, nil, fileData);
+
+          [[task setResponseBlock:^(DBFILESFileMetadata *dResult, DBFILESUploadError *routeError, DBRequestError *networkError) {
+              if (dResult) {
+                  NSLog(@"%@\n", dResult);
+                  result(@(TRUE));
+              } else {
+                  NSLog(@"%@\n%@\n", routeError, networkError);
+                  result(@(FALSE));
+              }
+          }] setProgressBlock:^(int64_t bytesUploaded, int64_t totalBytesUploaded, int64_t totalBytesExpectedToUploaded) {
+              NSLog(@"\n%lld\n%lld\n%lld\n", bytesUploaded, totalBytesUploaded, totalBytesExpectedToUploaded);
+              [channel invokeMethod:@"progress" arguments:@[key, @(totalBytesUploaded)]];
+          }];
+          
+      } else if ([client.fileRequestsRoutes respondsToSelector:@selector(uploadData: mode: autorename: clientModified: mute: propertyGroups:strictConflict: inputData:)]) {
+          
+          SEL selector = NSSelectorFromString(@"uploadData: mode: autorename: clientModified: mute: propertyGroups: strictConflict: inputData:");
+          IMP imp = [client.fileRequestsRoutes methodForSelector:selector];
+          /*
+           - (DBUploadTask *)uploadData:(NSString *)path
+                                   mode:(DBFILESWriteMode *)mode
+                             autorename:(NSNumber *)autorename
+                         clientModified:(NSDate *)clientModified
+                                   mute:(NSNumber *)mute
+                         propertyGroups:(NSArray<DBFILEPROPERTIESPropertyGroup *> *)propertyGroups
+                         strictConflict:(NSNumber *)strictConflict
+                            //contentHash:(NSString *)contentHash
+                              inputData:(NSData *)inputData {
+           */
+          DBUploadTask *(*func)(id, SEL, NSString *, DBFILESWriteMode *, NSNumber *, NSDate *, NSNumber *, NSArray<DBFILEPROPERTIESPropertyGroup *> *, NSNumber *, NSData *) = (void *)imp;
+          DBUploadTask *task = func(client.fileRequestsRoutes, selector, dropboxpath, mode, @(YES), nil, @(NO), nil, nil, fileData);
+
+          [[task setResponseBlock:^(DBFILESFileMetadata *dResult, DBFILESUploadError *routeError, DBRequestError *networkError) {
+              if (dResult) {
+                  NSLog(@"%@\n", dResult);
+                  result(@(TRUE));
+              } else {
+                  NSLog(@"%@\n%@\n", routeError, networkError);
+                  result(@(FALSE));
+              }
+          }] setProgressBlock:^(int64_t bytesUploaded, int64_t totalBytesUploaded, int64_t totalBytesExpectedToUploaded) {
+              NSLog(@"\n%lld\n%lld\n%lld\n", bytesUploaded, totalBytesUploaded, totalBytesExpectedToUploaded);
+              [channel invokeMethod:@"progress" arguments:@[key, @(totalBytesUploaded)]];
+          }];
+      }
       
   } else if ([@"download" isEqualToString:call.method]) {
       NSString *filepath = call.arguments[@"filepath"];
