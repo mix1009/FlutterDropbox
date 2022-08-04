@@ -172,11 +172,11 @@ FlutterMethodChannel* channel;
       NSError* error = nil;
       NSData* fileData = [NSData dataWithContentsOfFile:filepath  options:0 error:&error];
 
-      if ([client.fileRequestsRoutes respondsToSelector:@selector(uploadData: mode: autorename: clientModified: mute: propertyGroups:strictConflict:contentHash:inputData:)]) {
+      if ([client.filesRoutes respondsToSelector:@selector(uploadData: mode: autorename: clientModified: mute: propertyGroups:strictConflict:contentHash:inputData:)]) {
           SEL selector = NSSelectorFromString(@"uploadData: mode: autorename: clientModified: mute: propertyGroups: strictConflict: contentHash: inputData:");
-          IMP imp = [client.fileRequestsRoutes methodForSelector:selector];
+          IMP imp = [client.filesRoutes methodForSelector:selector];
           DBUploadTask *(*func)(id, SEL, NSString *, DBFILESWriteMode *, NSNumber *, NSDate *, NSNumber *, NSArray<DBFILEPROPERTIESPropertyGroup *> *, NSNumber *, NSString *, NSData *) = (void *)imp;
-          DBUploadTask *task = func(client.fileRequestsRoutes, selector, dropboxpath, mode, @(YES), nil, @(NO), nil, nil, nil, fileData);
+          DBUploadTask *task = func(client.filesRoutes, selector, dropboxpath, mode, @(YES), nil, @(NO), nil, nil, nil, fileData);
 
           [[task setResponseBlock:^(DBFILESFileMetadata *dResult, DBFILESUploadError *routeError, DBRequestError *networkError) {
               if (dResult) {
@@ -191,10 +191,10 @@ FlutterMethodChannel* channel;
               [channel invokeMethod:@"progress" arguments:@[key, @(totalBytesUploaded)]];
           }];
           
-      } else if ([client.fileRequestsRoutes respondsToSelector:@selector(uploadData: mode: autorename: clientModified: mute: propertyGroups:strictConflict: inputData:)]) {
+      } else if ([client.filesRoutes respondsToSelector:@selector(uploadData: mode: autorename: clientModified: mute: propertyGroups:strictConflict: inputData:)]) {
           
           SEL selector = NSSelectorFromString(@"uploadData: mode: autorename: clientModified: mute: propertyGroups: strictConflict: inputData:");
-          IMP imp = [client.fileRequestsRoutes methodForSelector:selector];
+          IMP imp = [client.filesRoutes methodForSelector:selector];
           /*
            - (DBUploadTask *)uploadData:(NSString *)path
                                    mode:(DBFILESWriteMode *)mode
@@ -207,7 +207,7 @@ FlutterMethodChannel* channel;
                               inputData:(NSData *)inputData {
            */
           DBUploadTask *(*func)(id, SEL, NSString *, DBFILESWriteMode *, NSNumber *, NSDate *, NSNumber *, NSArray<DBFILEPROPERTIESPropertyGroup *> *, NSNumber *, NSData *) = (void *)imp;
-          DBUploadTask *task = func(client.fileRequestsRoutes, selector, dropboxpath, mode, @(YES), nil, @(NO), nil, nil, fileData);
+          DBUploadTask *task = func(client.filesRoutes, selector, dropboxpath, mode, @(YES), nil, @(NO), nil, nil, fileData);
 
           [[task setResponseBlock:^(DBFILESFileMetadata *dResult, DBFILESUploadError *routeError, DBRequestError *networkError) {
               if (dResult) {
