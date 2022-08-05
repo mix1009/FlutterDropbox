@@ -87,7 +87,25 @@ For iOS,
               NSLog(@"Error: %@", authResult);
             }
           }
-          return NO;
+          return NO;          
+        }
+
+        // if your are linked with ObjectiveDropboxOfficial 6.x use below code instead
+
+        - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url
+            options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
+          BOOL result = [DBClientsManager handleRedirectURL:url completion: ^(DBOAuthResult *authResult) {
+            if (authResult != nil) {
+              if ([authResult isSuccess]) {
+                NSLog(@"Success! User is logged into Dropbox.");
+              } else if ([authResult isCancel]) {
+                NSLog(@"Authorization flow was manually canceled by user!");
+              } else if ([authResult isError]) {
+                NSLog(@"Error: %@", authResult);
+              }
+            }
+          }];
+          return NO;          
         }
 
 4) Update Deployment Target to iOS 9.0 or above from Xcode. (dropbox_client 0.7.0 and above)

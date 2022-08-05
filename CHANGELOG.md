@@ -1,3 +1,7 @@
+## 0.9.0  (2022/08/05)
+
+* fix compile issue when linking with ObjectiveDropboxOfficial 6.x.
+
 ## 0.8.0  (2021/03/09)
 
 * null safety

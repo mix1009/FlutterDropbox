@@ -14,7 +14,7 @@
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url
             options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
     if ([DBClientsManager respondsToSelector:@selector(handleRedirectURL:)]) {
-        SEL selector = NSSelectorFromString(@"handleRedirectURL:");
+        SEL selector = @selector(handleRedirectURL:);
         IMP imp = [DBClientsManager methodForSelector:selector];
         // + (DBOAuthResult *)handleRedirectURL:(NSURL *)url;
         DBOAuthResult *(*func)(id, SEL, NSURL *) = (void *)imp;
@@ -30,7 +30,7 @@
             }
         }
     } else if ([DBClientsManager respondsToSelector:@selector(handleRedirectURL:completion:)]) {
-        SEL selector = NSSelectorFromString(@"handleRedirectURL:completion:");
+        SEL selector = @selector(handleRedirectURL:completion:);
         IMP imp = [DBClientsManager methodForSelector:selector];
         // + (BOOL)handleRedirectURL:(NSURL *)url completion:(DBOAuthCompletion)completion;
         BOOL (*func)(id, SEL, NSURL *, DBOAuthCompletion) = (void *)imp;

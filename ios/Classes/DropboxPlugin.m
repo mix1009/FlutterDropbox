@@ -172,11 +172,14 @@ FlutterMethodChannel* channel;
       NSError* error = nil;
       NSData* fileData = [NSData dataWithContentsOfFile:filepath  options:0 error:&error];
 
+  
       if ([client.filesRoutes respondsToSelector:@selector(uploadData: mode: autorename: clientModified: mute: propertyGroups:strictConflict:contentHash:inputData:)]) {
-          SEL selector = NSSelectorFromString(@"uploadData: mode: autorename: clientModified: mute: propertyGroups: strictConflict: contentHash: inputData:");
+          SEL selector = @selector(uploadData: mode: autorename: clientModified: mute: propertyGroups:strictConflict:contentHash:inputData:);
           IMP imp = [client.filesRoutes methodForSelector:selector];
           DBUploadTask *(*func)(id, SEL, NSString *, DBFILESWriteMode *, NSNumber *, NSDate *, NSNumber *, NSArray<DBFILEPROPERTIESPropertyGroup *> *, NSNumber *, NSString *, NSData *) = (void *)imp;
           DBUploadTask *task = func(client.filesRoutes, selector, dropboxpath, mode, @(YES), nil, @(NO), nil, nil, nil, fileData);
+//
+//          DBUploadTask *task = [client.filesRoutes uploadData:dropboxpath mode:mode autorename:@(YES) clientModified:nil mute:@(NO) propertyGroups:nil strictConflict:nil contentHash:nil inputData: fileData];
 
           [[task setResponseBlock:^(DBFILESFileMetadata *dResult, DBFILESUploadError *routeError, DBRequestError *networkError) {
               if (dResult) {
@@ -193,7 +196,7 @@ FlutterMethodChannel* channel;
           
       } else if ([client.filesRoutes respondsToSelector:@selector(uploadData: mode: autorename: clientModified: mute: propertyGroups:strictConflict: inputData:)]) {
           
-          SEL selector = NSSelectorFromString(@"uploadData: mode: autorename: clientModified: mute: propertyGroups: strictConflict: inputData:");
+          SEL selector = @selector(uploadData: mode: autorename: clientModified: mute: propertyGroups:strictConflict:inputData:);
           IMP imp = [client.filesRoutes methodForSelector:selector];
           /*
            - (DBUploadTask *)uploadData:(NSString *)path
