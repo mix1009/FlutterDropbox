@@ -71,6 +71,23 @@ For iOS,
           return true
         }
 
+        // if your are linked with ObjectiveDropboxOfficial 6.x use below code instead
+
+        override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+          DBClientsManager.handleRedirectURL(url, completion:{ (authResult) in
+            if let authResult = authResult {
+                if authResult.isSuccess() {
+                    print("dropbox auth success")
+                } else if (authResult.isCancel()) {
+                    print("dropbox auth cancel")
+                } else if (authResult.isError()) {
+                    print("dropbox auth error \(authResult.errorDescription)")
+                }
+            }
+          });
+          return true
+        }
+
 3.b) If you are using Objective C, add below code to AppDelegate.m
 
         #import <ObjectiveDropboxOfficial/ObjectiveDropboxOfficial.h>
