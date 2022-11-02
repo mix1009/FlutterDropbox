@@ -13,10 +13,10 @@ class _CallbackInfo {
 }
 
 class Dropbox {
-  static const MethodChannel _channel = const MethodChannel('dropbox');
+  static const MethodChannel _channel = MethodChannel('dropbox');
 
   static int _callbackInt = 0;
-  static Map<int, _CallbackInfo> _callbackMap = Map<int, _CallbackInfo>();
+  static final Map<int, _CallbackInfo> _callbackMap = <int, _CallbackInfo>{};
 
   /// Initialize dropbox library
   ///
@@ -55,6 +55,11 @@ class Dropbox {
     await _channel.invokeMethod('authorize');
   }
 
+  /// Authorize using short-lived tokens
+  static Future<void> authorizePKCE() async {
+    await _channel.invokeMethod('authorizePKCE');
+  }
+
   /// Unlink account (remove authorization).
   static Future<void> unlink() async {
     await _channel.invokeMethod('unlink');
@@ -67,6 +72,16 @@ class Dropbox {
   static Future<void> authorizeWithAccessToken(String accessToken) async {
     await _channel
         .invokeMethod('authorizeWithAccessToken', {'accessToken': accessToken});
+  }
+
+  /// Authorize with Credentials
+  ///
+  /// use getCredentials() to get Access and Refresh Token after successful authorizePKCE().
+  /// authorizeWithCredentials() will authorize without user interaction if access and refresh tokens are valid.
+  /// It should automatically refresh the access token if expired
+  static Future<void> authorizeWithCredentials(String credentials) async {
+    await _channel
+        .invokeMethod('authorizeWithCredentials', {'credentials': credentials});
   }
 
   // static Future<String> getAuthorizeUrl() async {
@@ -82,6 +97,12 @@ class Dropbox {
   /// returns null if not authorized.
   static Future<String?> getAccessToken() async {
     return await _channel.invokeMethod('getAccessToken');
+  }
+
+  /// same for PKCE
+  ///
+  static Future<String?> getCredentials() async {
+    return await _channel.invokeMethod('getCredentials');
   }
 
   /// get account name
