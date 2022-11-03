@@ -13,10 +13,10 @@ class _CallbackInfo {
 }
 
 class Dropbox {
-  static const MethodChannel _channel = MethodChannel('dropbox');
+  static const MethodChannel _channel = const MethodChannel('dropbox');
 
   static int _callbackInt = 0;
-  static final Map<int, _CallbackInfo> _callbackMap = <int, _CallbackInfo>{};
+  static Map<int, _CallbackInfo> _callbackMap = <int, _CallbackInfo>{};
 
   /// Initialize dropbox library
   ///

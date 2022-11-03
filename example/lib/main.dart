@@ -28,6 +28,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   String? accessToken;
+  String? credentials;
   bool showInstruction = false;
 
   @override
@@ -47,11 +48,22 @@ class _HomeState extends State<Home> {
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     accessToken = prefs.getString('dropboxAccessToken');
+    credentials = prefs.getString('dropboxCredentials');
 
     setState(() {});
   }
 
   Future<bool> checkAuthorized(bool authorize) async {
+    final _credentials = await Dropbox.getCredentials();
+    if (_credentials != null) {
+      if (credentials == null || _credentials!.isEmpty) {
+        credentials = _credentials;
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setString('dropboxCredentials', credentials!);
+      }
+      return true;
+    }
+
     final token = await Dropbox.getAccessToken();
     if (token != null) {
       if (accessToken == null || accessToken!.isEmpty) {
@@ -61,7 +73,16 @@ class _HomeState extends State<Home> {
       }
       return true;
     }
+
     if (authorize) {
+      if (credentials != null && credentials!.isNotEmpty) {
+        await Dropbox.authorizeWithCredentials(credentials!);
+        final _credentials = await Dropbox.getCredentials();
+        if (_credentials != null) {
+          print('authorizeWithCredentials!');
+          return true;
+        }
+      }
       if (accessToken != null && accessToken!.isNotEmpty) {
         await Dropbox.authorizeWithAccessToken(accessToken!);
         final token = await Dropbox.getAccessToken();
@@ -81,8 +102,27 @@ class _HomeState extends State<Home> {
     await Dropbox.authorize();
   }
 
-  Future unlink() async {
-    await deleteAccessToken();
+  Future authorizePKCE() async {
+    await Dropbox.authorizePKCE();
+  }
+
+  Future unlinkToken() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.remove('dropboxAccessToken');
+
+    setState(() {
+      accessToken = null;
+    });
+    await Dropbox.unlink();
+  }
+
+  Future unlinkCredentials() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.remove('dropboxCredentials');
+
+    setState(() {
+      credentials = null;
+    });
     await Dropbox.unlink();
   }
 
@@ -90,13 +130,8 @@ class _HomeState extends State<Home> {
     await Dropbox.authorizeWithAccessToken(accessToken!);
   }
 
-  Future deleteAccessToken() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.remove('dropboxAccessToken');
-
-    setState(() {
-      accessToken = null;
-    });
+  Future authorizeWithCredentials() async {
+    await Dropbox.authorizeWithCredentials(credentials!);
   }
 
   Future getAccountName() async {
@@ -166,7 +201,7 @@ class _HomeState extends State<Home> {
               builder: (context) {
                 return Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Wrap(
                       children: <Widget>[
@@ -182,8 +217,30 @@ class _HomeState extends State<Home> {
                         ),
                         ElevatedButton(
                           child: Text('unlink'),
-                          onPressed: unlink,
+                          onPressed: unlinkToken,
                         ),
+                      ],
+                    ),
+                    Wrap(
+                      children: <Widget>[
+                        ElevatedButton(
+                          child: Text('authorizePKCE'),
+                          onPressed: authorizePKCE,
+                        ),
+                        ElevatedButton(
+                          child: Text('authorizeWithCredentials'),
+                          onPressed: credentials == null
+                              ? null
+                              : authorizeWithCredentials,
+                        ),
+                        ElevatedButton(
+                          child: Text('unlink'),
+                          onPressed: unlinkCredentials,
+                        ),
+                      ],
+                    ),
+                    Wrap(
+                      children: <Widget>[
                         ElevatedButton(
                           child: Text('list root folder'),
                           onPressed: () async {
