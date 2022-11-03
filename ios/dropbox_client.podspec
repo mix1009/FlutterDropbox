@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'dropbox_client'
-  s.version          = '0.9.0'
+  s.version          = '1.0.0'
   s.summary          = 'Dropbox client for Flutter'
   s.description      = <<-DESC
 A new flutter plugin project.

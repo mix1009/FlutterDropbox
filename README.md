@@ -139,7 +139,10 @@ Future initDropbox() async {
     // init dropbox client. (call only once!)
     await Dropbox.init(dropbox_clientId, dropbox_key, dropbox_secret);
 }
+```
 
+```
+// Legacy Authorization
 String accessToken;
 
 Future testLogin() async {
@@ -159,6 +162,33 @@ Future testLogout() async {
   // unlink removes authorization
   await Dropbox.unlink();
 }
+```
+
+```
+// OAuth 2 code flow with PKCE that grants a short-lived token
+String credentials;
+
+Future testLogin() async {
+  // this will run Dropbox app if possible, if not it will run authorization using a web browser.
+  await Dropbox.authorizePKCE();
+}
+
+Future getCredentials() async {
+  credentials = await Dropbox.getCredentials();
+}
+
+Future loginWithCredentials() async {
+  await Dropbox.authorizeWithCredentials(credentials);
+}
+
+Future testLogout() async {
+  // unlink removes authorization
+  await Dropbox.unlink();
+}
+```
+
+```
+// List / Upload / Download
 
 Future testListFolder() async {
   final result = await Dropbox.listFolder(''); // list root folder

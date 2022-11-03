@@ -1,3 +1,8 @@
+## 1.0.0  (2022/11/03)
+
+* add support for short-lived PKCE authorization (authorizePKCE)
+* android support for PKCE authorization has been contributed by https://github.com/ToH2002 (more info in README-TE.md )
+
 ## 0.9.0  (2022/08/05)
 
 * fix compile issue when linking with ObjectiveDropboxOfficial 6.x.
