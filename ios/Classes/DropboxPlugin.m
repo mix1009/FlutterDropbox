@@ -101,7 +101,29 @@ FlutterMethodChannel* channel;
       [DBClientsManager authorizeClientFromKeychain:accessToken];
 
       result(@(TRUE));
+  } else if ([@"authorizePKCE" isEqualToString:call.method]) {
+      DBScopeRequest *scopeRequest = [[DBScopeRequest alloc] initWithScopeType:DBScopeTypeUser
+                                                                        scopes:@[]
+                                                          includeGrantedScopes:NO];
+      [DBClientsManager authorizeFromControllerV2:[UIApplication sharedApplication]
+                                       controller:[[self class] topMostController]
+                            loadingStatusDelegate:nil
+                                          openURL:^(NSURL *url) { [[UIApplication sharedApplication] openURL:url]; }
+                                     scopeRequest:scopeRequest];
+
+      result(@(TRUE));
+  } else if ([@"authorizeWithCredentials" isEqualToString:call.method]) {
+      NSString *accessToken = call.arguments[@"credentials"];
+      // XXX iOS seems to use accessToken for management of keys (even if short lived PKCE is used)
       
+      [DBClientsManager authorizeClientFromKeychain:accessToken];
+
+      result(@(TRUE));
+  } else if ([@"getCredentials" isEqualToString:call.method]) {
+      // XXX iOS seems to use accessToken for management of keys (even if short lived PKCE is used)
+      DBUserClient *client = [DBClientsManager authorizedClient];
+      result(client.accessToken);
+
   } else if ([@"getAccountName" isEqualToString:call.method]) {
       DBUserClient *client = [DBClientsManager authorizedClient];
       
