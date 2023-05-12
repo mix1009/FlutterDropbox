@@ -56,6 +56,7 @@ import java.io.OutputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -240,7 +241,11 @@ public class DropboxPlugin implements FlutterPlugin, MethodCallHandler, Activity
 
       if (!checkClient(result)) return;
       (new TemporaryLinkTask(result)).execute(path);
+    } else if (call.method.equals("getThumbnailBase64String")) {
+      String path = call.argument("path");
 
+      if (!checkClient(result)) return;
+      (new ThumbnailBase64StringTask(result)).execute(path);
     } else if (call.method.equals("getAccessToken")) {
 //      result.success(accessToken);
       String token = Auth.getOAuth2Token();
@@ -419,6 +424,37 @@ public class DropboxPlugin implements FlutterPlugin, MethodCallHandler, Activity
 
         return link;
       } catch (DbxException e) {
+        e.printStackTrace();
+        return e.getMessage();
+      }
+    }
+    @Override
+    protected void onPostExecute(String r) {
+      super.onPostExecute(r);
+      result.success(r);
+    }
+  }
+
+  class ThumbnailBase64StringTask extends AsyncTask<String, Void, String> {
+    Result result;
+
+    private ThumbnailBase64StringTask(Result _result) {
+      result = _result;
+    }
+    @Override
+    protected String doInBackground(String... argPaths) {
+      try {
+        String path = argPaths[0];
+        DbxDownloader<FileMetadata> downloader = DropboxPlugin.client.files().getThumbnail(path);
+        ByteArrayOutputStream bo = new ByteArrayOutputStream();
+        downloader.download(bo);
+        String encodedString = Base64.getEncoder().encodeToString(bo.toByteArray());
+
+        return encodedString;
+      } catch (DbxException e) {
+        e.printStackTrace();
+        return e.getMessage();
+      } catch (IOException e) {
         e.printStackTrace();
         return e.getMessage();
       }
