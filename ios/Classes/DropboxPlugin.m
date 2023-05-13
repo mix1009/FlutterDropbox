@@ -199,14 +199,12 @@ FlutterMethodChannel* channel;
               } else {
                   result(@"error");
               }
-              NSLog(@"result:");
-              NSLog(@"%@", result);
           } else if (routeError) {
               result([NSString stringWithFormat:@"error = %@", routeError]);
-              NSLog(@"eouteError = %@", routeError);
+              NSLog(@"routeError = %@", routeError);
           } else if (networkError) {
               result([NSString stringWithFormat:@"error = %@", networkError]);
-              NSLog(@"eouteError = %@", networkError);
+              NSLog(@"networkError = %@", networkError);
           };
       }];
   } else if ([@"upload" isEqualToString:call.method]) {
