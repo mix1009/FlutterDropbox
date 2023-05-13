@@ -184,6 +184,31 @@ FlutterMethodChannel* channel;
               NSLog(@"dbError = %@", dbError);
           }
       }];
+  } else if ([@"getThumbnailBase64String" isEqualToString:call.method]) {
+      DBUserClient *client = [DBClientsManager authorizedClient];
+      NSString *path = call.arguments[@"path"];
+      
+      NSArray<DBFILESThumbnailArg *> *entries = @[[[DBFILESThumbnailArg alloc] initWithPath:path]];
+      [[client.filesRoutes getThumbnailBatch:entries]
+          setResponseBlock:^(DBFILESGetThumbnailBatchResult *thumbnailResult, DBFILESGetThumbnailBatchError *routeError, DBRequestError *networkError) {
+          if (thumbnailResult) {
+              DBFILESGetThumbnailBatchResultEntry *entry = thumbnailResult.entries[0];
+              if (entry.isSuccess) {
+                  DBFILESGetThumbnailBatchResultData *data = entry.success;
+                  result(data.thumbnail);
+              } else {
+                  result(@"error");
+              }
+              NSLog(@"result:");
+              NSLog(@"%@", result);
+          } else if (routeError) {
+              result([NSString stringWithFormat:@"error = %@", routeError]);
+              NSLog(@"eouteError = %@", routeError);
+          } else if (networkError) {
+              result([NSString stringWithFormat:@"error = %@", networkError]);
+              NSLog(@"eouteError = %@", networkError);
+          };
+      }];
   } else if ([@"upload" isEqualToString:call.method]) {
       NSString *filepath = call.arguments[@"filepath"];
       NSString *dropboxpath = call.arguments[@"dropboxpath"];
