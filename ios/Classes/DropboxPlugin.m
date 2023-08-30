@@ -52,6 +52,11 @@ FlutterMethodChannel* channel;
 //        NSString *clientId = call.arguments[@"clientId"];
         NSString *key = call.arguments[@"key"];
 //        NSString *secret = call.arguments[@"secret"];
+        if ([DBOAuthManager sharedOAuthManager]) {
+          NSLog(@"Already initialized with appKey %@", appKey);
+          result(@(TRUE));
+          return;
+        }
         appKey = key;
 
 //#define DOWNLOAD_ERROR_WORKAROUND
