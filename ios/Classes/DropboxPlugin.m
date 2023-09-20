@@ -54,7 +54,7 @@ FlutterMethodChannel* channel;
 //        NSString *secret = call.arguments[@"secret"];
         if ([DBOAuthManager sharedOAuthManager]) {
           NSLog(@"Already initialized with appKey %@", appKey);
-          result(TRUE);
+          result([NSNumber numberWithBool:TRUE]);
           return;
         }
         appKey = key;
