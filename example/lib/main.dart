@@ -1,8 +1,10 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:dropbox_client/dropbox_client.dart';
+import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -187,6 +189,16 @@ class _HomeState extends State<Home> {
     return result;
   }
 
+  Uint8List? thumbImage;
+
+  Future getThumbnail(path) async {
+    final b64 = await Dropbox.getThumbnailBase64String(path);
+
+    setState(() {
+      thumbImage = base64Decode(b64!);
+    });
+  }
+
   final list = List<dynamic>.empty(growable: true);
 
   @override
@@ -259,6 +271,14 @@ class _HomeState extends State<Home> {
                             await downloadTest();
                           },
                         ),
+                        ElevatedButton(
+                          child: Text('test thumbnail'),
+                          onPressed: () async {
+                            // await getThumbnail('/icon64.png');
+                            await getThumbnail('/Get Started with Dropbox.pdf');
+                          },
+                        ),
+                        if (thumbImage != null) Image.memory(thumbImage!)
                       ],
                     ),
                     Expanded(
