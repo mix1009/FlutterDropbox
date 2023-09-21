@@ -1,3 +1,8 @@
+## 1.1.0  (2023/09/22)
+* add getCurrentAccount() - contributed by https://github.com/DarkFighterLuke
+* add getThumbnailBase64String(path) - contributed by https://github.com/tannakaken
+* fix crash issue on iOS when hot restart - contributed by https://github.com/PKiman
+
 ## 1.0.0  (2022/11/03)
 
 * add support for short-lived PKCE authorization (authorizePKCE)
