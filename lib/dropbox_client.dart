@@ -1,6 +1,9 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
+import 'package:dropbox_client/account_info.dart';
 import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
 
 typedef DropboxProgressCallback = void Function(
     int currentBytes, int totalBytes);
@@ -169,5 +172,22 @@ class Dropbox {
     _callbackMap.remove(key);
 
     return ret;
+  }
+
+  /// get current account information.
+  ///
+  /// if no user is logged in, this method returns null,
+  /// else it returns an AccountInfo object.
+  static Future<AccountInfo?> getCurrentAccount() async {
+    var accessToken = await Dropbox.getAccessToken();
+    if (accessToken == null) {
+      return null;
+    }
+
+    var url =
+        Uri.parse('https://api.dropboxapi.com/2/users/get_current_account');
+    var response =
+        await http.post(url, headers: {'Authorization': 'Bearer $accessToken'});
+    return AccountInfo.fromMap(jsonDecode(response.body));
   }
 }
