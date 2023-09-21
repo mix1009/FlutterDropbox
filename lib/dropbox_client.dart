@@ -126,6 +126,14 @@ class Dropbox {
     return await _channel.invokeMethod('getTemporaryLink', {'path': path});
   }
 
+  /// get base64 string of thumbnail for image file
+  ///
+  /// returns base64 string of thumbnail for dropbox image file.
+  static Future<String?> getThumbnailBase64String(String path) async {
+    return await _channel
+        .invokeMethod('getThumbnailBase64String', {'path': path});
+  }
+
   /// upload local file in filepath to dropboxpath.
   ///
   /// filepath is local file path. dropboxpath should start with /.
