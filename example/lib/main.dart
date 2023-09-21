@@ -199,6 +199,16 @@ class _HomeState extends State<Home> {
     });
   }
 
+  Future getAccountInfo() async {
+    final accountInfo = await Dropbox.getCurrentAccount();
+
+    if (accountInfo != null) {
+      print(accountInfo.name!.displayName);
+      print(accountInfo.email!);
+      print(accountInfo.rootInfo!.homeNamespaceId!);
+    }
+  }
+
   final list = List<dynamic>.empty(growable: true);
 
   @override
@@ -278,7 +288,13 @@ class _HomeState extends State<Home> {
                             await getThumbnail('/Get Started with Dropbox.pdf');
                           },
                         ),
-                        if (thumbImage != null) Image.memory(thumbImage!)
+                        if (thumbImage != null) Image.memory(thumbImage!),
+                        ElevatedButton(
+                          child: Text('getAccountInfo'),
+                          onPressed: () async {
+                            await getAccountInfo();
+                          },
+                        ),
                       ],
                     ),
                     Expanded(
