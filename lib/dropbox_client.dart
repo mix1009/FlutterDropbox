@@ -186,7 +186,7 @@ class Dropbox {
     if (!forceCredentialsUse) {
       accessToken = await Dropbox.getAccessToken();
     }
-    
+
     if (accessToken == null) {
       final credentials = await Dropbox.getCredentials();
       if (credentials != null) {
