@@ -178,16 +178,44 @@ class Dropbox {
   ///
   /// if no user is logged in, this method returns null,
   /// else it returns an AccountInfo object.
-  static Future<AccountInfo?> getCurrentAccount() async {
-    var accessToken = await Dropbox.getAccessToken();
+  static Future<AccountInfo?> getCurrentAccount({
+    bool forceCredentialsUse = false,
+  }) async {
+    String? accessToken;
+
+    if (!forceCredentialsUse) {
+      accessToken = await Dropbox.getAccessToken();
+    }
+
+    if (accessToken == null) {
+      final credentials = await Dropbox.getCredentials();
+      if (credentials != null) {
+        try {
+          final jsonCredentials = jsonDecode(credentials);
+          accessToken = jsonCredentials['access_token'];
+        } catch (_) {
+          return null;
+        }
+      }
+    }
+
     if (accessToken == null) {
       return null;
     }
 
-    var url =
+    final url =
         Uri.parse('https://api.dropboxapi.com/2/users/get_current_account');
-    var response =
+    final response =
         await http.post(url, headers: {'Authorization': 'Bearer $accessToken'});
-    return AccountInfo.fromMap(jsonDecode(response.body));
+    final jsonBody = jsonDecode(response.body);
+    if (jsonBody['account_id'] == null) {
+      return null;
+    } else {
+      try {
+        return AccountInfo.fromMap(jsonBody);
+      } catch (_) {
+        return null;
+      }
+    }
   }
 }

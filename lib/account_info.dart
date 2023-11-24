@@ -8,6 +8,7 @@ class AccountInfo {
   AccountName? name;
   String? email;
   bool? emailVerified;
+  String? profilePhotoUrl;
   bool? disabled;
   String? country;
   String? locale;
@@ -21,6 +22,7 @@ class AccountInfo {
       this.name,
       this.email,
       this.emailVerified,
+      this.profilePhotoUrl,
       this.disabled,
       this.country,
       this.locale,
@@ -34,6 +36,7 @@ class AccountInfo {
     name = AccountName.fromMap(json["name"]);
     email = json["email"];
     emailVerified = json["email_verified"];
+    profilePhotoUrl = json["profile_photo_url"];
     disabled = json["disabled"];
     country = json["country"];
     locale = json["locale"];
@@ -49,6 +52,7 @@ class AccountInfo {
       "name": name?.toMap(),
       "email": email,
       "email_verified": emailVerified,
+      "profile_photo_url": profilePhotoUrl,
       "disabled": disabled,
       "country": country,
       "locale": locale,
