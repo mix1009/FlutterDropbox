@@ -206,6 +206,7 @@ class _HomeState extends State<Home> {
       print(accountInfo.name!.displayName);
       print(accountInfo.email!);
       print(accountInfo.rootInfo!.homeNamespaceId!);
+      print(accountInfo.profilePhotoUrl!);
     }
   }
 
