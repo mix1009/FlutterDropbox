@@ -1,3 +1,6 @@
+## 1.1.1  (2023/11/24)
+* add support of profilePhotoUrl to getCurrentAccount(). contributed by https://github.com/xvadim
+
 ## 1.1.0  (2023/09/22)
 * add getCurrentAccount() - contributed by https://github.com/DarkFighterLuke
 * add getThumbnailBase64String(path) - contributed by https://github.com/tannakaken
