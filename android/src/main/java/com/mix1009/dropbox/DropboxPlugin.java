@@ -18,7 +18,6 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
-import io.flutter.plugin.common.PluginRegistry.Registrar;
 
 import com.dropbox.core.DbxAppInfo;
 import com.dropbox.core.json.JsonReadException;
@@ -70,7 +69,7 @@ public class DropboxPlugin implements FlutterPlugin, MethodCallHandler, Activity
 
   @Override
   public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
-    setupChannel(binding.getFlutterEngine().getDartExecutor(), binding.getApplicationContext());
+    setupChannel(binding.getBinaryMessenger());
   }
 
   @Override
@@ -78,16 +77,7 @@ public class DropboxPlugin implements FlutterPlugin, MethodCallHandler, Activity
     teardownChannel();
   }
 
-
-  public static void registerWith(Registrar registrar) {
-    if (registrar.activity() != null) {
-      DropboxPlugin.activity = registrar.activity();
-    }
-    DropboxPlugin plugin = new DropboxPlugin();
-    plugin.setupChannel(registrar.messenger(), registrar.context());
-  }
-
-  private void setupChannel(BinaryMessenger messenger, Context context) {
+  private void setupChannel(BinaryMessenger messenger) {
     channel = new MethodChannel(messenger, CHANNEL_NAME);
     channel.setMethodCallHandler(this);
   }

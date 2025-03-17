@@ -1,5 +1,5 @@
 PODS:
-  - dropbox_client (1.0.0):
+  - dropbox_client (1.1.0):
     - Flutter
     - ObjectiveDropboxOfficial
   - Flutter (1.0.0)
@@ -32,12 +32,12 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/shared_preferences_foundation/darwin"
 
 SPEC CHECKSUMS:
-  dropbox_client: d876dfb94067101d8ae69130e866b48cff9f5f84
-  Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
+  dropbox_client: 0d72681ee5ad3a49eb06e8ca779e0561d7f129a0
+  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   ObjectiveDropboxOfficial: 1b9ca679750487f770fda3f38c106d6e17fe2d73
   path_provider_foundation: 29f094ae23ebbca9d3d0cec13889cd9060c0e943
   shared_preferences_foundation: 5b919d13b803cadd15ed2dc053125c68730e5126
 
 PODFILE CHECKSUM: 663715e941f9adb426e33bf9376914006f9ea95b
 
-COCOAPODS: 1.12.1
+COCOAPODS: 1.16.2
