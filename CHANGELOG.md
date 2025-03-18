@@ -1,3 +1,6 @@
+## 1.1.2 (2025/03/18)
+* Android: Migration to Flutter Embedding V2. contributed by https://github.com/MishaKomar
+
 ## 1.1.1  (2023/11/24)
 * add support of profilePhotoUrl to getCurrentAccount(). contributed by https://github.com/xvadim
 
