@@ -9,9 +9,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  shared_preferences: ^2.0.3
-  path_provider: ^2.0.1
-  cupertino_icons: ^1.0.2
+  shared_preferences: ^2.2.2
+  path_provider: ^2.1.1
+  cupertino_icons: ^1.0.6
 
 dev_dependencies:
   flutter_test:

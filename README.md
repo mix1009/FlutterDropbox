@@ -126,6 +126,12 @@ For iOS,
         }
 
 4) Update Deployment Target to iOS 9.0 or above from Xcode. (dropbox_client 0.7.0 and above)
+
+5) Add below permissions to your app from Dropbox App Console:
+ - files.metadata.read
+ - files.metadata.write
+ - files.content.read
+ - files.content.write
         
 If you need more help setting up for iOS, please read https://github.com/dropbox/dropbox-sdk-obj-c#get-started .
 

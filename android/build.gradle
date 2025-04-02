@@ -4,18 +4,19 @@ version '1.0'
 buildscript {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.1.0'
+        classpath 'com.android.tools.build:gradle:8.3.0'
     }
 }
 
 rootProject.allprojects {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
+        maven { url "https://jitpack.io" }
     }
 }
 
@@ -23,7 +24,12 @@ apply plugin: 'com.android.library'
 
 android {
     namespace "com.mix1009.dropbox"
-    compileSdk 33
+    compileSdk 34
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
 
     defaultConfig {
         minSdkVersion 16
@@ -35,6 +41,7 @@ android {
 }
 
 dependencies {
-    implementation 'com.dropbox.core:dropbox-core-sdk:4.0.1'
-    api 'com.squareup.okhttp3:okhttp:3.10.0'
+    implementation 'com.dropbox.core:dropbox-core-sdk:7.0.0'
+    implementation 'com.dropbox.core:dropbox-android-sdk:7.0.0'
+    api 'com.squareup.okhttp3:okhttp:4.12.0'
 }
