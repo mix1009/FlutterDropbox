@@ -1,6 +1,6 @@
 name: dropbox_client
 description: Dropbox client for Flutter. The library supports Android and iOS. Authorization is done through Dropbox app or external web browser.
-version: 1.1.2
+version: 1.2.0
 #author: ChunKoo Park <mix1009@gmail.com>
 homepage: https://github.com/mix1009/FlutterDropbox
 
