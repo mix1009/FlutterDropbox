@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'dropbox_client'
-  s.version          = '1.1.0'
+  s.version          = '1.2.0'
   s.summary          = 'Dropbox client for Flutter'
   s.description      = <<-DESC
 A new flutter plugin project.
@@ -16,9 +16,9 @@ A new flutter plugin project.
   s.source_files = 'Classes/**/*'
   s.public_header_files = 'Classes/**/*.h'
   s.dependency 'Flutter'
-  s.dependency 'ObjectiveDropboxOfficial'
-  s.platform = :ios, '9.0'
+  s.dependency 'ObjectiveDropboxOfficial', '~> 7.4'
+  s.platform = :ios, '13.0'
 
   # Flutter.framework does not contain a i386 slice. Only x86_64 simulators are supported.
-  s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'VALID_ARCHS[sdk=iphonesimulator*]' => 'x86_64' }
+  s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }
 end

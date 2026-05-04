@@ -1,3 +1,4 @@
+import os
 import sys
 
 # This python script install/uninstall dropbox key from example project.
@@ -44,8 +45,18 @@ def print_usage():
     print("  -u : Uninstall")
 
 def main():
+    global APP_KEY, APP_SECRET
     if len(APP_KEY) == 0 or len(APP_SECRET) == 0:
-        print("Fill APP_KEY and APP_SECRET with your dropbox developer account by editing dropbox_key.py")
+        try:
+            from dotenv import load_dotenv
+            load_dotenv()
+            APP_KEY = APP_KEY or os.getenv('DROPBOX_APP_KEY', '')
+            APP_SECRET = APP_SECRET or os.getenv('DROPBOX_APP_SECRET', '')
+        except ImportError:
+            pass
+
+    if len(APP_KEY) == 0 or len(APP_SECRET) == 0:
+        print("Fill APP_KEY and APP_SECRET with your dropbox developer account by editing dropbox_key.py or .env file")
         sys.exit(1)
 
     if len(sys.argv) != 2:

@@ -19,12 +19,30 @@ FlutterMethodChannel* channel;
 
 + (UIViewController*)topMostController
 {
-    UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;
-
+    UIWindow *keyWindow = nil;
+    if (@available(iOS 13.0, *)) {
+        for (UIWindowScene *scene in [UIApplication sharedApplication].connectedScenes) {
+            if (scene.activationState == UISceneActivationStateForegroundActive) {
+                for (UIWindow *window in scene.windows) {
+                    if (window.isKeyWindow) {
+                        keyWindow = window;
+                        break;
+                    }
+                }
+            }
+            if (keyWindow) break;
+        }
+    }
+    if (!keyWindow) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        keyWindow = [UIApplication sharedApplication].keyWindow;
+#pragma clang diagnostic pop
+    }
+    UIViewController *topController = keyWindow.rootViewController;
     while (topController.presentedViewController) {
         topController = topController.presentedViewController;
     }
-
     return topController;
 }
 
@@ -76,7 +94,7 @@ FlutterMethodChannel* channel;
                                      controller:[[self class] topMostController]
                                         openURL:^(NSURL *url) {
                                           NSLog(@"url = %@" , [url absoluteString]);
-                                          [[UIApplication sharedApplication] openURL:url];
+                                          [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
                                         }];
       result([NSNumber numberWithBool:TRUE]);
       
@@ -110,10 +128,15 @@ FlutterMethodChannel* channel;
       DBScopeRequest *scopeRequest = [[DBScopeRequest alloc] initWithScopeType:DBScopeTypeUser
                                                                         scopes:@[]
                                                           includeGrantedScopes:NO];
+      // Fix for issue #40: use openURL:options:completionHandler: so that deep-linking
+      // into the installed Dropbox app works correctly on iOS 10+ (the deprecated
+      // openURL: variant can silently fail to switch to the Dropbox app).
       [DBClientsManager authorizeFromControllerV2:[UIApplication sharedApplication]
                                        controller:[[self class] topMostController]
                             loadingStatusDelegate:nil
-                                          openURL:^(NSURL *url) { [[UIApplication sharedApplication] openURL:url]; }
+                                          openURL:^(NSURL *url) {
+                                              [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
+                                          }
                                      scopeRequest:scopeRequest];
 
       result(@(TRUE));

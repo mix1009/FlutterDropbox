@@ -1,3 +1,12 @@
+## 1.2.1 (2026/05/04)
+* iOS: fix authorizePKCE() not working when Dropbox app is installed (issue #40)
+* iOS: fix deprecated openURL: API usage in authorize and authorizePKCE (use openURL:options:completionHandler:)
+* iOS: fix deprecated keyWindow API usage (use UIWindowScene on iOS 13+)
+* iOS: update ObjectiveDropboxOfficial to 7.4.2
+* iOS: bump minimum iOS deployment target to 13.0 (required by ObjectiveDropboxOfficial 7.x and Flutter)
+* iOS: pin ObjectiveDropboxOfficial to ~> 7.4 for stability
+* Android: bump compileSdk to 35
+
 ## 1.2.0 (2025/04/02)
 * update Dropbox SDK (7.0.0)
 * update to latest Android SDK (35)
