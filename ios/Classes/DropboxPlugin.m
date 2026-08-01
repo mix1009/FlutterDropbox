@@ -193,6 +193,7 @@ FlutterMethodChannel* channel;
       
   } else if ([@"unlink" isEqualToString:call.method]) {
       [DBClientsManager unlinkAndResetClients];
+      result(nil);
       
   } else if ([@"getTemporaryLink" isEqualToString:call.method]) {
       DBUserClient *client = [DBClientsManager authorizedClient];
