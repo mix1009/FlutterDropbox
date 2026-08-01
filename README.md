@@ -7,7 +7,8 @@ A flutter plugin for accessing Dropbox.
 ## Setup
 
 Register a Dropbox API app from https://www.dropbox.com/developers .
-You need dropbox key and dropbox secret.
+You need a Dropbox app key. Public clients using PKCE do not need an app secret,
+and must not embed one in the application.
 
 For Android, add below in AndroidManifest.xml (replace DROPBOXKEY with your key)
 
@@ -142,9 +143,15 @@ If you need more help setting up for iOS, please read https://github.com/dropbox
 import 'package:dropbox_client/dropbox_client.dart';
 
 Future initDropbox() async {
-    // init dropbox client. (call only once!)
-    await Dropbox.init(dropbox_clientId, dropbox_key, dropbox_secret);
+    // Initialize a public client for PKCE. Call only once.
+    await Dropbox.init(dropbox_clientId, dropbox_key);
 }
+```
+
+The optional third argument is retained for legacy confidential-client flows:
+
+```
+await Dropbox.init(dropbox_clientId, dropbox_key, dropbox_secret);
 ```
 
 ```

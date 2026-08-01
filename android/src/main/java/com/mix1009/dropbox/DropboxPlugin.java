@@ -143,7 +143,9 @@ public class DropboxPlugin implements FlutterPlugin, MethodCallHandler, Activity
       String key = call.argument("key");
       String secret = call.argument("secret");
       this.clientId = clientId;
-      this.appInfo = new DbxAppInfo(key, secret);
+      this.appInfo = secret == null || secret.isEmpty()
+              ? new DbxAppInfo(key)
+              : new DbxAppInfo(key, secret);
 
       sDbxRequestConfig = DbxRequestConfig.newBuilder(clientId)
               .withHttpRequestor(new OkHttp3Requestor(OkHttp3Requestor.defaultOkHttpClient()))

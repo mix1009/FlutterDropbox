@@ -21,10 +21,13 @@ class Dropbox {
   static int _callbackInt = 0;
   static Map<int, _CallbackInfo> _callbackMap = <int, _CallbackInfo>{};
 
-  /// Initialize dropbox library
+  /// Initialize Dropbox.
   ///
   /// init() should be called only once.
-  static Future<bool> init(String clientId, String key, String secret) async {
+  ///
+  /// [secret] is optional and must not be embedded in public clients that use
+  /// [authorizePKCE].
+  static Future<bool> init(String clientId, String key, [String? secret]) async {
     _channel.setMethodCallHandler(_handleMethodCall);
 
     return await _channel.invokeMethod(
