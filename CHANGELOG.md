@@ -1,5 +1,5 @@
-## Unreleased
-* Android: allow initialization without an app secret for public PKCE clients
+## 1.2.2 (2026/08/03)
+* Android: allow initialization without an app secret for public PKCE clients. contributed by https://github.com/exploratia
 
 ## 1.2.1 (2026/05/04)
 * iOS: fix authorizePKCE() not working when Dropbox app is installed (issue #40)
