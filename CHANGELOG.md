@@ -1,3 +1,6 @@
+## Unreleased
+* Android: allow initialization without an app secret for public PKCE clients
+
 ## 1.2.1 (2026/05/04)
 * iOS: fix authorizePKCE() not working when Dropbox app is installed (issue #40)
 * iOS: fix deprecated openURL: API usage in authorize and authorizePKCE (use openURL:options:completionHandler:)
